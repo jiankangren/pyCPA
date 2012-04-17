@@ -38,7 +38,7 @@ Initialization
 Now, let's look at the example.
 Before we actually start with the program, we import all pycpa modules which are needed for this example
 
-.. literalinclude:: ../examples/spp-test.py
+.. literalinclude:: ../examples/spp_test.py
    :language: python
    :lines: 16-23
    
@@ -48,37 +48,37 @@ which controls various modes in which pyCPA can be executed.
 
 The first step is to initialize the pyCPA environment.
 
-.. literalinclude:: ../examples/spp-test.py
+.. literalinclude:: ../examples/spp_test.py
    :language: python
    :lines: 26-28
 
 This will parse the pyCPA related options such as the propagation method, verbosity,
 maximum-busy window, etc.
-Conveniently, this also prints the optiones which will be used for your pyCPA session.
+Conveniently, this also prints the options which will be used for your pyCPA session.
 This is handy, when you run some analyses in batch jobs and want are uncertain about the exact settings after a few weeks.
 
 System Model
 ------------
 Then we can continue to create an empty system, which is just a container for all other objects: 
 
-.. literalinclude:: ../examples/spp-test.py
+.. literalinclude:: ../examples/spp_test.py
    :language: python
    :lines: 29-30
 
 The next step is to create two resources R1 and R2.
 The first argument of :py:func:`pycpa.model.add_resource()` sets the scheduling policy.
-Infact, the first argument is a "function pointer" to a function which computes the multiple-event busy window on that resource
+In fact, the first argument is a "function pointer" to a function which computes the multiple-event busy window on that resource
 in this example we use the static priority busy window algorithm.
 The second parameter is the abort criteria for that particular scheduling policy.
 
-By default (if the paramter is omitted) pyCPA will wait until the resource is idle again.
+By default (if the parameter is omitted) pyCPA will wait until the resource is idle again.
 This is a conservative approach for work-conserving scheduling policies such as RR, FIFO, SPP, SPNP. 
 Note, that TDMA is not work-conserving.
 
 Some busy-window algorithms come with their own abort criteria (e.g. TDMA) either because the default criterion 
 is not conservative or because there is a quicker way to do that - like for SPP. 
 
-.. literalinclude:: ../examples/spp-test.py
+.. literalinclude:: ../examples/spp_test.py
    :language: python
    :lines: 34-35
 
@@ -86,16 +86,16 @@ The next part is to create tasks and bind them to a resource.
 In the example, this is done in one step.
 The scheduling_paramter denotes the priority, wcet and bcet the worst- and best-case execution time.    
 
-.. literalinclude:: ../examples/spp-test.py
+.. literalinclude:: ../examples/spp_test.py
    :language: python
    :lines: 37-39
 
 In case tasks communicate with each other through event propagation (e.g. one task fills the queue of another task),
 we model this through task links.
-A task link is abstract and does not consume any additionoal time.
+A task link is abstract and does not consume any additional time.
 In case of communication-overhead it must be modeled by using other resources/tasks.
  
-.. literalinclude:: ../examples/spp-test.py
+.. literalinclude:: ../examples/spp_test.py
    :language: python
    :lines: 45-47
 
@@ -104,7 +104,7 @@ Plotting the Task-Graph
        
 Then, we plot the taskgraph to a pdf file by using the graph module.
 
-.. literalinclude:: ../examples/spp-test.py
+.. literalinclude:: ../examples/spp_test.py
    :language: python
    :lines: 53-54
 
@@ -119,7 +119,7 @@ was larger than a limit or the load on a resource is larger one).
 The results are stored inside the task objects: each task has a new attribute wcrt
 which contains the worst-case response time.
 
-.. literalinclude:: ../examples/spp-test.py
+.. literalinclude:: ../examples/spp_test.py
    :language: python
    :lines: 56-66       
 
@@ -133,4 +133,4 @@ This is the full spp-test file.
 As you can see, the worst-case response times of the tasks 
 are 10, 13, 2 and 21.
 
-.. literalinclude:: ../examples/spp-test.py
+.. literalinclude:: ../examples/spp_test.py
