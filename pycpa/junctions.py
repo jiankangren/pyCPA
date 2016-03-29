@@ -53,6 +53,17 @@ class ORJoin(analysis.JunctionStrategy):
     def __init__(self):
         self.name = "or"
 
+    def _filter_propagate_tasks(self, junction, propagate_tasks):
+        # find potential functional cycles in the app-graph
+        # propagate tasks are all previous input tasks without cycles
+        subgraph = util.breadth_first_search(junction)
+        for prev in junction.prev_tasks:
+            if prev in subgraph:
+                logger.warning("Cutting functional cycle at join. PLEASE BE SURE THAT YOU KNOW WHAT YOU'RE DOING!")
+                propagate_tasks.remove(prev)
+
+        return propagate_tasks
+
     def calculate_out_event_model(self, junction):
         assert len(junction.in_event_models) > 0
         if len(junction.in_event_models) > 1:
@@ -71,7 +82,6 @@ class ANDJoin(analysis.JunctionStrategy):
         self.name = "and"
 
     def calculate_out_event_model(self, junction):
-        # TODO delta_min can be less conservatively computed by the max (not min). See issue #3
         assert len(junction.in_event_models) > 0
         em = model.EventModel()
         em.deltamin_func = lambda n: (
@@ -81,6 +91,17 @@ class ANDJoin(analysis.JunctionStrategy):
         em.__description__ = "AND " + \
                 "".join([emif.__description__
                          for emif in junction.in_event_models.values()])
+
+        # calculate waiting delay for every task connected to this junction (see issue #6)
+        # FIXME: this is rather conservative but could be improved if the input event models have a
+        #        common source
+        for t in junction.in_event_models:
+            waiting_delay = max(emif.delta_plus(2) for emif in junction.in_event_models.values() if emif is not t)
+
+            junction.analysis_results[t] = analysis.TaskResult()
+            junction.analysis_results[t].bcrt = 0
+            junction.analysis_results[t].wcrt = waiting_delay
+
         return em
 
 
